@@ -6,4 +6,6 @@ class Business < ApplicationRecord
   has_many :business_activities
   has_many :business_trades, through: :business_activities
   has_many :mayors_permit_fees, through: :business_trades
+  has_many :fee_selections, as: :selector
+  has_many :fees, through: :fee_selections
 end

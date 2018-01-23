@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_01_23_031024) do
+ActiveRecord::Schema.define(version: 2018_01_23_031624) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -73,6 +73,23 @@ ActiveRecord::Schema.define(version: 2018_01_23_031024) do
     t.datetime "updated_at", null: false
     t.index ["business_id"], name: "index_business_activities_on_business_id"
     t.index ["business_trade_id"], name: "index_business_activities_on_business_trade_id"
+  end
+
+  create_table "business_areas", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "business_id"
+    t.decimal "area"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id"], name: "index_business_areas_on_business_id"
+  end
+
+  create_table "business_fees", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "fee_id"
+    t.uuid "business_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id"], name: "index_business_fees_on_business_id"
+    t.index ["fee_id"], name: "index_business_fees_on_fee_id"
   end
 
   create_table "business_ownerships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -218,6 +235,9 @@ ActiveRecord::Schema.define(version: 2018_01_23_031024) do
   add_foreign_key "amounts", "entries"
   add_foreign_key "business_activities", "business_trades"
   add_foreign_key "business_activities", "businesses"
+  add_foreign_key "business_areas", "businesses"
+  add_foreign_key "business_fees", "businesses"
+  add_foreign_key "business_fees", "fees"
   add_foreign_key "business_ownerships", "businesses"
   add_foreign_key "business_trades", "sub_categories"
   add_foreign_key "businesses", "type_of_organizations"
