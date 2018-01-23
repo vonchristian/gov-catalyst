@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_01_23_031019) do
+ActiveRecord::Schema.define(version: 2018_01_23_031022) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -89,12 +89,27 @@ ActiveRecord::Schema.define(version: 2018_01_23_031019) do
     t.index ["tax_type"], name: "index_business_tax_brackets_on_tax_type"
   end
 
+  create_table "business_trades", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "sub_category_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sub_category_id"], name: "index_business_trades_on_sub_category_id"
+  end
+
   create_table "businesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "type_of_organization_id"
     t.index ["type_of_organization_id"], name: "index_businesses_on_type_of_organization_id"
+  end
+
+  create_table "categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name", unique: true
   end
 
   create_table "entries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -130,6 +145,15 @@ ActiveRecord::Schema.define(version: 2018_01_23_031019) do
     t.uuid "business_tax_bracket_id"
     t.index ["business_id"], name: "index_gross_sales_on_business_id"
     t.index ["business_tax_bracket_id"], name: "index_gross_sales_on_business_tax_bracket_id"
+  end
+
+  create_table "sub_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "category_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_sub_categories_on_category_id"
+    t.index ["name"], name: "index_sub_categories_on_name", unique: true
   end
 
   create_table "taxpayers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -181,10 +205,12 @@ ActiveRecord::Schema.define(version: 2018_01_23_031019) do
   add_foreign_key "amounts", "accounts"
   add_foreign_key "amounts", "entries"
   add_foreign_key "business_ownerships", "businesses"
+  add_foreign_key "business_trades", "sub_categories"
   add_foreign_key "businesses", "type_of_organizations"
   add_foreign_key "fees", "accounts", column: "revenue_account_id"
   add_foreign_key "gross_sales", "business_tax_brackets"
   add_foreign_key "gross_sales", "businesses"
+  add_foreign_key "sub_categories", "categories"
   add_foreign_key "voucher_amounts", "accounts"
   add_foreign_key "voucher_amounts", "vouchers"
 end
