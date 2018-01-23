@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_01_23_030024) do
+ActiveRecord::Schema.define(version: 2018_01_23_031019) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -76,6 +76,19 @@ ActiveRecord::Schema.define(version: 2018_01_23_030024) do
     t.index ["owner_type", "owner_id"], name: "index_business_ownerships_on_owner_type_and_owner_id"
   end
 
+  create_table "business_tax_brackets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "minimum_gross_sale"
+    t.decimal "maximum_gross_sale"
+    t.decimal "tax_amount"
+    t.integer "tax_rate"
+    t.integer "tax_type"
+    t.decimal "tax_rate_for_excess"
+    t.decimal "gross_limit"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tax_type"], name: "index_business_tax_brackets_on_tax_type"
+  end
+
   create_table "businesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -95,6 +108,28 @@ ActiveRecord::Schema.define(version: 2018_01_23_030024) do
     t.datetime "updated_at", null: false
     t.index ["commercial_document_type", "commercial_document_id"], name: "index_commercial_document_on_entries"
     t.index ["origin_type", "origin_id"], name: "index_entries_on_origin_type_and_origin_id"
+  end
+
+  create_table "fees", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.decimal "amount", default: "0.0"
+    t.uuid "revenue_account_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_fees_on_name", unique: true
+    t.index ["revenue_account_id"], name: "index_fees_on_revenue_account_id"
+  end
+
+  create_table "gross_sales", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "business_id"
+    t.decimal "amount", default: "0.0"
+    t.decimal "tax_amount", default: "0.0"
+    t.datetime "date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "business_tax_bracket_id"
+    t.index ["business_id"], name: "index_gross_sales_on_business_id"
+    t.index ["business_tax_bracket_id"], name: "index_gross_sales_on_business_tax_bracket_id"
   end
 
   create_table "taxpayers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -147,6 +182,9 @@ ActiveRecord::Schema.define(version: 2018_01_23_030024) do
   add_foreign_key "amounts", "entries"
   add_foreign_key "business_ownerships", "businesses"
   add_foreign_key "businesses", "type_of_organizations"
+  add_foreign_key "fees", "accounts", column: "revenue_account_id"
+  add_foreign_key "gross_sales", "business_tax_brackets"
+  add_foreign_key "gross_sales", "businesses"
   add_foreign_key "voucher_amounts", "accounts"
   add_foreign_key "voucher_amounts", "vouchers"
 end
