@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_01_23_031022) do
+ActiveRecord::Schema.define(version: 2018_01_23_031024) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -64,6 +64,15 @@ ActiveRecord::Schema.define(version: 2018_01_23_031022) do
     t.index ["commercial_document_type", "commercial_document_id"], name: "index_commercial_document_on_amounts"
     t.index ["entry_id"], name: "index_amounts_on_entry_id"
     t.index ["type"], name: "index_amounts_on_type"
+  end
+
+  create_table "business_activities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "business_id"
+    t.uuid "business_trade_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id"], name: "index_business_activities_on_business_id"
+    t.index ["business_trade_id"], name: "index_business_activities_on_business_trade_id"
   end
 
   create_table "business_ownerships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -131,6 +140,9 @@ ActiveRecord::Schema.define(version: 2018_01_23_031022) do
     t.uuid "revenue_account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "feeable_type"
+    t.uuid "feeable_id"
+    t.index ["feeable_type", "feeable_id"], name: "index_fees_on_feeable_type_and_feeable_id"
     t.index ["name"], name: "index_fees_on_name", unique: true
     t.index ["revenue_account_id"], name: "index_fees_on_revenue_account_id"
   end
@@ -204,6 +216,8 @@ ActiveRecord::Schema.define(version: 2018_01_23_031022) do
   add_foreign_key "accounts", "accounts", column: "main_account_id"
   add_foreign_key "amounts", "accounts"
   add_foreign_key "amounts", "entries"
+  add_foreign_key "business_activities", "business_trades"
+  add_foreign_key "business_activities", "businesses"
   add_foreign_key "business_ownerships", "businesses"
   add_foreign_key "business_trades", "sub_categories"
   add_foreign_key "businesses", "type_of_organizations"

@@ -3,4 +3,7 @@ class Business < ApplicationRecord
   has_many :business_ownerships
   has_many :taxpayer_owners, through: :business_ownerships, source: :owner, source_type: "Taxpayer"
   has_many :gross_sales
+  has_many :business_activities
+  has_many :business_trades, through: :business_activities
+  has_many :mayors_permit_fees, through: :business_trades
 end
