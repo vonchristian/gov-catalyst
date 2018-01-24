@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_01_23_031624) do
+ActiveRecord::Schema.define(version: 2018_01_23_040928) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -151,6 +151,16 @@ ActiveRecord::Schema.define(version: 2018_01_23_031624) do
     t.index ["origin_type", "origin_id"], name: "index_entries_on_origin_type_and_origin_id"
   end
 
+  create_table "fee_selections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "selector_type"
+    t.uuid "selector_id"
+    t.uuid "fee_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fee_id"], name: "index_fee_selections_on_fee_id"
+    t.index ["selector_type", "selector_id"], name: "index_fee_selections_on_selector_type_and_selector_id"
+  end
+
   create_table "fees", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.decimal "amount", default: "0.0"
@@ -159,8 +169,10 @@ ActiveRecord::Schema.define(version: 2018_01_23_031624) do
     t.datetime "updated_at", null: false
     t.string "feeable_type"
     t.uuid "feeable_id"
+    t.integer "payment_recurrence", default: 0
     t.index ["feeable_type", "feeable_id"], name: "index_fees_on_feeable_type_and_feeable_id"
     t.index ["name"], name: "index_fees_on_name", unique: true
+    t.index ["payment_recurrence"], name: "index_fees_on_payment_recurrence"
     t.index ["revenue_account_id"], name: "index_fees_on_revenue_account_id"
   end
 
@@ -176,6 +188,38 @@ ActiveRecord::Schema.define(version: 2018_01_23_031624) do
     t.index ["business_tax_bracket_id"], name: "index_gross_sales_on_business_tax_bracket_id"
   end
 
+  create_table "requirement_applications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "requirement_id"
+    t.string "applicant_type"
+    t.uuid "applicant_id"
+    t.datetime "application_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "cost"
+    t.index ["applicant_type", "applicant_id"], name: "index_requirement_applications_on_applicant"
+    t.index ["requirement_id"], name: "index_requirement_applications_on_requirement_id"
+  end
+
+  create_table "requirement_approvals", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "approver_type"
+    t.bigint "approver_id"
+    t.datetime "date_approved"
+    t.string "approved_document_type"
+    t.bigint "approved_document_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["approved_document_type", "approved_document_id"], name: "index_approved_document_on_requirement_approvals"
+    t.index ["approver_type", "approver_id"], name: "index_requirement_approvals_on_approver_type_and_approver_id"
+  end
+
+  create_table "requirements", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "name"
+    t.index ["type"], name: "index_requirements_on_type"
+  end
+
   create_table "sub_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "category_id"
     t.string "name"
@@ -183,6 +227,51 @@ ActiveRecord::Schema.define(version: 2018_01_23_031624) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_sub_categories_on_category_id"
     t.index ["name"], name: "index_sub_categories_on_name", unique: true
+  end
+
+  create_table "subsidiary_requirements", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "main_requirement_id"
+    t.uuid "subsidiary_requirement_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["main_requirement_id"], name: "index_subsidiary_requirements_on_main_requirement_id"
+    t.index ["subsidiary_requirement_id"], name: "index_subsidiary_requirements_on_subsidiary_requirement_id"
+  end
+
+  create_table "tax_calculators", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "tax_calculable_type"
+    t.uuid "tax_calculable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_tax_calculators_on_name"
+    t.index ["tax_calculable_type", "tax_calculable_id"], name: "index_tax_calculable_on_tax_calculators"
+  end
+
+  create_table "tax_selections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "tax_id"
+    t.string "selector_type"
+    t.uuid "selector_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["selector_type", "selector_id"], name: "index_tax_selections_on_selector_type_and_selector_id"
+    t.index ["tax_id"], name: "index_tax_selections_on_tax_id"
+  end
+
+  create_table "taxes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "min_taxable_amount"
+    t.decimal "max_taxable_amount"
+    t.decimal "max_taxable_limit"
+    t.decimal "tax_amount"
+    t.decimal "tax_rate"
+    t.integer "tax_type"
+    t.decimal "tax_rate_for_excess"
+    t.string "taxable_type"
+    t.uuid "taxable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tax_type"], name: "index_taxes_on_tax_type"
+    t.index ["taxable_type", "taxable_id"], name: "index_taxes_on_taxable_type_and_taxable_id"
   end
 
   create_table "taxpayers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -241,10 +330,15 @@ ActiveRecord::Schema.define(version: 2018_01_23_031624) do
   add_foreign_key "business_ownerships", "businesses"
   add_foreign_key "business_trades", "sub_categories"
   add_foreign_key "businesses", "type_of_organizations"
+  add_foreign_key "fee_selections", "fees"
   add_foreign_key "fees", "accounts", column: "revenue_account_id"
   add_foreign_key "gross_sales", "business_tax_brackets"
   add_foreign_key "gross_sales", "businesses"
+  add_foreign_key "requirement_applications", "requirements"
   add_foreign_key "sub_categories", "categories"
+  add_foreign_key "subsidiary_requirements", "requirements", column: "main_requirement_id"
+  add_foreign_key "subsidiary_requirements", "requirements", column: "subsidiary_requirement_id"
+  add_foreign_key "tax_selections", "taxes"
   add_foreign_key "voucher_amounts", "accounts"
   add_foreign_key "voucher_amounts", "vouchers"
 end

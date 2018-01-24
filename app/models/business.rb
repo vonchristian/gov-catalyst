@@ -5,7 +5,10 @@ class Business < ApplicationRecord
   has_many :gross_sales
   has_many :business_activities
   has_many :business_trades, through: :business_activities
-  has_many :mayors_permit_fees, through: :business_trades
   has_many :fee_selections, as: :selector
   has_many :fees, through: :fee_selections
+
+  has_many :tax_selections, as: :selector
+  has_many :taxes, through: :tax_selections
+  has_many :requirement_applications, as: :applicants
 end

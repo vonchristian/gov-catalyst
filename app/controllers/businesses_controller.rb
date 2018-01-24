@@ -1,5 +1,8 @@
 class BusinessesController < ApplicationController
   def index
-    @business = Business.all
+    @businesses = Business.all
+  end
+  def show
+    @business = Business.find(params[:id])
   end
 end
