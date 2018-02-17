@@ -6,6 +6,7 @@ class GrossSale < ApplicationRecord
 
   after_save :create_tax
   private
+
   def set_tax_amount
     amount = BusinessTaxBracket.set_tax(self)
     tax = Tax.create(amount: amount, name: "Business Tax", revenue_account: Accounting::Account.find_by_name("Business Tax"))
