@@ -1,6 +1,4 @@
 <%= simple_form_for @sign_up, url: :taxpayer_sign_ups do |f| %>
   <%= f.input :email %>
-  <%= f.input :password %>
-  <%= f.input :password_confirmation %>
-  <%= f.submit "Sign Up" %>
+  <%= f.submit "Sign Up", class: "btn btn-outline-warning" %>
 <% end %>

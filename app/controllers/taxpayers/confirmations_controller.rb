@@ -4,7 +4,7 @@ module Taxpayers
     private
 
     def after_confirmation_path_for(resource_name, resource)
-      taxpayer_dashboard_path(resource)
+      taxpayer_path(resource)
     end
 
   end

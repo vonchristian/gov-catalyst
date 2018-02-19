@@ -13,6 +13,6 @@ Rails.application.routes.draw do
 
   resources :taxpayer_sign_ups, only: [:new, :create], module: :taxpayers
   resources :taxpayers, only: [:show] do
-    resources :dashboard, only: [:index], module: :taxpayers
+    resources :business_permit_applications, only: [:new, :create], module: :taxpayers
   end
 end

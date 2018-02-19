@@ -2,20 +2,29 @@ module Taxpayers
   class SignUp
     include ActiveModel::Model
      attr_accessor :email, :password, :password_confirmation
-     validates :email, :password, :password_confirmation, presence: true
+     validates :email,  presence: true
     def save
       ActiveRecord::Base.transaction do
         create_sign_up
       end
     end
+    def notice
+      if find_taxpayer.confirmed?
+        "You are already registered"
+      else
+        "Please confirm your email"
+      end
+    end
 
     private
     def create_sign_up
-      email = Taxpayer.create(email: email)
-      send_confirmation_email(email)
+      taxpayer = Taxpayer.find_or_create_by(email: email)
+      unless taxpayer.confirmed?
+        taxpayer.send_confirmation_instructions
+      end
     end
-    def send_confirmation_email(email)
-      ConfirmationEmailJob.new(email).deliver_later
+    def find_taxpayer
+      Taxpayer.find_by(email: email)
     end
   end
 end

@@ -1,0 +1,6 @@
+<%= simple_form_for @permit_application, url: :taxpayer_business_permit_applications do |f| %>
+  <%= f.input :business_name %>
+  <%= f.input :taxpayer_id, input_html: { value: @taxpayer.id }, as: :hidden %>
+  <%= f.input :type_of_organization_id, collection: Configurations::TypeOfOrganization.all.map{|a| [a.name, a.id] } %>
+  <%= f.submit "Proceed", class: "btn btn-outline-warning" %>
+<% end %>
