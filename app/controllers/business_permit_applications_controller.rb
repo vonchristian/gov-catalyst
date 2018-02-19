@@ -1,4 +1,4 @@
-class BusinessRegistrationsController < ApplicationController
+class BusinessPermitApplicationsController < ApplicationController
   def new
     @registration = BusinessPermitApplication.new
   end

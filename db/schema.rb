@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_19_081427) do
+ActiveRecord::Schema.define(version: 2018_02_19_092957) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -198,30 +198,6 @@ ActiveRecord::Schema.define(version: 2018_02_19_081427) do
     t.index ["business_tax_bracket_id"], name: "index_gross_sales_on_business_tax_bracket_id"
   end
 
-  create_table "requirement_applications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "requirement_id"
-    t.string "applicant_type"
-    t.uuid "applicant_id"
-    t.datetime "application_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.decimal "cost"
-    t.index ["applicant_type", "applicant_id"], name: "index_requirement_applications_on_applicant"
-    t.index ["requirement_id"], name: "index_requirement_applications_on_requirement_id"
-  end
-
-  create_table "requirement_approvals", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "approver_type"
-    t.bigint "approver_id"
-    t.datetime "date_approved"
-    t.string "approved_document_type"
-    t.bigint "approved_document_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["approved_document_type", "approved_document_id"], name: "index_approved_document_on_requirement_approvals"
-    t.index ["approver_type", "approver_id"], name: "index_requirement_approvals_on_approver_type_and_approver_id"
-  end
-
   create_table "requirement_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "type"
     t.datetime "date"
@@ -271,8 +247,37 @@ ActiveRecord::Schema.define(version: 2018_02_19_081427) do
     t.integer "sex"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "unconfirmed_email"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.uuid "invited_by_id"
+    t.integer "invitations_count", default: 0
     t.index ["email"], name: "index_taxpayers_on_email", unique: true
+    t.index ["invitation_token"], name: "index_taxpayers_on_invitation_token", unique: true
+    t.index ["invitations_count"], name: "index_taxpayers_on_invitations_count"
+    t.index ["invited_by_id"], name: "index_taxpayers_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_taxpayers_on_invited_by_type_and_invited_by_id"
+    t.index ["reset_password_token"], name: "index_taxpayers_on_reset_password_token", unique: true
     t.index ["sex"], name: "index_taxpayers_on_sex"
+    t.index ["unlock_token"], name: "index_taxpayers_on_unlock_token", unique: true
   end
 
   create_table "type_of_organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -324,7 +329,6 @@ ActiveRecord::Schema.define(version: 2018_02_19_081427) do
   add_foreign_key "fees", "accounts", column: "revenue_account_id"
   add_foreign_key "gross_sales", "business_tax_brackets"
   add_foreign_key "gross_sales", "businesses"
-  add_foreign_key "requirement_applications", "requirements"
   add_foreign_key "requirement_transactions", "business_requirements"
   add_foreign_key "sub_categories", "categories"
   add_foreign_key "taxes", "accounts", column: "revenue_account_id"

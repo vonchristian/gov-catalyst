@@ -28,8 +28,8 @@ gem "select2-rails"
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'chronic'
-gem 'bootstrap-sass'
-gem 'icheck-rails'
+gem 'bootstrap', '~> 4.0.0'
+gem "simple_calendar", "~> 2.0"
 gem 'mechanize'
 gem 'friendly_id'
 gem 'font-awesome-rails'
@@ -57,7 +57,6 @@ gem 'dotiw'
 gem "spreadsheet"
 gem 'daemons'
 gem 'delayed-web'
-gem 'colorize'
 group :development, :test do
   gem 'guard'
   gem 'guard-livereload'
@@ -86,6 +85,4 @@ end
 gem 'rack-mini-profiler'
 gem 'memory_profiler'
 gem 'whenever', :require => false
-
-gem "simple_calendar", "~> 2.0"
 gem 'traceroute'

@@ -1,3 +1,6 @@
+Setup devise rb in production
+
+
 What are your core value?
 Relationship with God, family
 Fitness
@@ -21,3 +24,5 @@ Top 5 Goals within the Next 12 months
     focus
     mastery based learning
     communication to client
+send invitations
+less 100 per invitation
