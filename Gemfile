@@ -21,7 +21,8 @@ gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.2'
 gem 'jbuilder', '~> 2.5'
 gem 'redis', '~> 3.2'
-gem 'devise'
+gem 'devise',           '~> 4.2'
+gem 'devise_invitable', '~> 1.7.0'
 gem 'simple_form'
 gem "select2-rails"
 gem 'jquery-rails'
@@ -29,6 +30,7 @@ gem 'jquery-ui-rails'
 gem 'chronic'
 gem 'bootstrap-sass'
 gem 'icheck-rails'
+gem 'mechanize'
 gem 'friendly_id'
 gem 'font-awesome-rails'
 gem 'bootstrap-datepicker-rails'
@@ -67,6 +69,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "letter_opener"
   gem 'pry-rails'
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'spring'

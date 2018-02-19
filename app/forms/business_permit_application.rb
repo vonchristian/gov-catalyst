@@ -1,4 +1,4 @@
-class BusinessRegistrationForm
+class BusinessPermitApplication
   include ActiveModel::Model
   include ActiveModel::Validations
 

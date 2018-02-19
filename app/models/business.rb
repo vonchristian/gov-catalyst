@@ -6,5 +6,7 @@ class Business < ApplicationRecord
   has_many :business_activities
   has_many :business_trades, through: :business_activities
 
-  has_many :requirement_applications, as: :applicant
+  def owners
+    taxpayer_owners
+  end
 end

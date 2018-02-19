@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_17_003817) do
+ActiveRecord::Schema.define(version: 2018_02_19_081427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -222,6 +222,19 @@ ActiveRecord::Schema.define(version: 2018_02_17_003817) do
     t.index ["approver_type", "approver_id"], name: "index_requirement_approvals_on_approver_type_and_approver_id"
   end
 
+  create_table "requirement_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "type"
+    t.datetime "date"
+    t.string "client_type"
+    t.uuid "client_id"
+    t.uuid "business_requirement_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_requirement_id"], name: "index_requirement_transactions_on_business_requirement_id"
+    t.index ["client_type", "client_id"], name: "index_requirement_transactions_on_client_type_and_client_id"
+    t.index ["type"], name: "index_requirement_transactions_on_type"
+  end
+
   create_table "requirements", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "type"
     t.datetime "created_at", null: false
@@ -312,6 +325,7 @@ ActiveRecord::Schema.define(version: 2018_02_17_003817) do
   add_foreign_key "gross_sales", "business_tax_brackets"
   add_foreign_key "gross_sales", "businesses"
   add_foreign_key "requirement_applications", "requirements"
+  add_foreign_key "requirement_transactions", "business_requirements"
   add_foreign_key "sub_categories", "categories"
   add_foreign_key "taxes", "accounts", column: "revenue_account_id"
   add_foreign_key "voucher_amounts", "accounts"
