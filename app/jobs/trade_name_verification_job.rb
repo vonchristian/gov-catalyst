@@ -1,1 +1,1 @@
-verify if trade name is registered with dti
+# verify if trade name is registered with dti
