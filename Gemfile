@@ -79,7 +79,6 @@ group :test do
   gem 'shoulda-matchers'
   gem 'database_rewinder'
   gem 'launchy'
-  gem 'capybara-webkit'
 end
 
 gem 'rack-mini-profiler'
