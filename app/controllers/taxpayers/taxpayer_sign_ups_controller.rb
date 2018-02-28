@@ -9,7 +9,7 @@ module Taxpayers
         @sign_up.save
         redirect_to "/", notice: "#{@sign_up.notice}"
       else
-        redirect_to landing_page_index_url, alert: "Error"
+        render :new
       end
     end
 

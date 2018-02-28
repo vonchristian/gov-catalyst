@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_19_092957) do
+ActiveRecord::Schema.define(version: 2018_02_28_072509) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -196,6 +196,16 @@ ActiveRecord::Schema.define(version: 2018_02_19_092957) do
     t.uuid "business_tax_bracket_id"
     t.index ["business_id"], name: "index_gross_sales_on_business_id"
     t.index ["business_tax_bracket_id"], name: "index_gross_sales_on_business_tax_bracket_id"
+  end
+
+  create_table "official_receipts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "number"
+    t.datetime "date"
+    t.string "receiptable_type"
+    t.uuid "receiptable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["receiptable_type", "receiptable_id"], name: "index_official_receipts_on_receiptable_type_and_receiptable_id"
   end
 
   create_table "requirement_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
