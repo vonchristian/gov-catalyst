@@ -9,4 +9,11 @@ class Business < ApplicationRecord
   def owners
     taxpayer_owners
   end
+  def paid_business_taxes(options={})
+    business_tax_account.credits_balance(commercial_document_id: self.id, from_date: options[:from_date], to_date: options[:to_date])
+  end
+
+  def unpaid_business_taxes(options={})
+    business_tax_account.balance(commercial_document_id: self.id, from_date: options[:from_date], to_date: options[:to_date])
+  end
 end
