@@ -1,6 +1,11 @@
 class BusinessesController < ApplicationController
   def index
-    @businesses = Business.all
+    if params[:taxpayer_id].present?
+      @taxpayer = Taxpayer.find(params[:taxpayer_id])
+      @businesses = @taxpayer.businesses
+    else
+      @businesses = Business.all
+    end
   end
   def show
     @business = Business.find(params[:id])

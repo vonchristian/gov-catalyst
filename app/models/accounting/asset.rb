@@ -1,2 +1,4 @@
-class Asset < Account
+module Accounting
+  class Asset < Account
+  end
 end

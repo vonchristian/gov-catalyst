@@ -1,5 +1,6 @@
 class Business < ApplicationRecord
   belongs_to :type_of_organization, class_name: "Configurations::TypeOfOrganization"
+  belongs_to :category, class_name: "Configurations::Category"
   has_many :business_ownerships,    class_name: "Businesses::BusinessOwnership"
   has_many :taxpayer_owners,        through: :business_ownerships,
                                     source: :owner,
@@ -17,5 +18,7 @@ class Business < ApplicationRecord
 
   def business_owners
     taxpayer_owners
+  end
+  def compute(computer: Fees::MayorsPermitFeeComputer)
   end
 end

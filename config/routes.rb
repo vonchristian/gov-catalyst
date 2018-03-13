@@ -4,10 +4,13 @@ Rails.application.routes.draw do
   unauthenticated :taxpayer do
     root :to => 'landing_page#index',  as: :unauthenticated_taxpayer_root
   end
-  root :to => 'taxpayers/businesses#index', :constraints => lambda { |request| request.env['warden'].user.present? }, as: :taxpayer_root
+  authenticated :taxpayer do
+    root :to => 'taxpayers/businesses#index', :constraints => lambda { |request| request.env['warden'].user.present? }, as: :authenticated_taxpayer_root
+  end
   devise_for :taxpayers, :controllers => { :invitations => 'taxpayers/invitations', confirmations: 'taxpayers/confirmations', sessions: 'taxpayers/sessions' }
   resources :businesses, only: [:index, :show] do
     resources :fees, only: [:new, :create]
+    resources :gross_sales, only: [:new, :create], module: :businesses
   end
   resources :business_permit_applications, only: [:new, :create]
 

@@ -1,6 +1,6 @@
 module Configurations
   class Category < ApplicationRecord
-    def tax_calculator
-    end
+    validates :name, presence: true, uniqueness: true
+    has_many :tax_brackets, class_name: "Configurations::BusinessTaxBracket"
   end
 end

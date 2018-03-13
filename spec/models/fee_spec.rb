@@ -1,5 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Fee, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'associations' do
+    it { is_expected.to belong_to :accounts_receivable_account }
+    it { is_expected.to belong_to :revenue_account }
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_03_12_131713) do
+ActiveRecord::Schema.define(version: 2018_03_13_122155) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -115,12 +115,14 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
     t.decimal "minimum_gross_sale"
     t.decimal "maximum_gross_sale"
     t.decimal "tax_amount"
-    t.integer "tax_rate"
+    t.decimal "tax_rate"
     t.integer "tax_type"
     t.decimal "tax_rate_for_excess"
     t.decimal "gross_limit"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "category_id"
+    t.index ["category_id"], name: "index_business_tax_brackets_on_category_id"
     t.index ["tax_type"], name: "index_business_tax_brackets_on_tax_type"
   end
 
@@ -131,8 +133,12 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "tax_id"
+    t.decimal "amount"
+    t.string "taxable_type"
+    t.uuid "taxable_id"
     t.index ["business_id"], name: "index_business_taxes_on_business_id"
     t.index ["tax_id"], name: "index_business_taxes_on_tax_id"
+    t.index ["taxable_type", "taxable_id"], name: "index_business_taxes_on_taxable_type_and_taxable_id"
   end
 
   create_table "business_trades", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -149,7 +155,9 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
     t.datetime "updated_at", null: false
     t.uuid "type_of_organization_id"
     t.uuid "business_tax_account_id"
+    t.uuid "category_id"
     t.index ["business_tax_account_id"], name: "index_businesses_on_business_tax_account_id"
+    t.index ["category_id"], name: "index_businesses_on_category_id"
     t.index ["type_of_organization_id"], name: "index_businesses_on_type_of_organization_id"
   end
 
@@ -183,6 +191,8 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
     t.uuid "feeable_id"
     t.integer "payment_recurrence", default: 0
     t.integer "fee_type"
+    t.uuid "accounts_receivable_account_id"
+    t.index ["accounts_receivable_account_id"], name: "index_fees_on_accounts_receivable_account_id"
     t.index ["fee_type"], name: "index_fees_on_fee_type"
     t.index ["feeable_type", "feeable_id"], name: "index_fees_on_feeable_type_and_feeable_id"
     t.index ["name"], name: "index_fees_on_name", unique: true
@@ -212,6 +222,13 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
     t.index ["receiptable_type", "receiptable_id"], name: "index_official_receipts_on_receiptable_type_and_receiptable_id"
   end
 
+  create_table "public_markets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "requirement_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "type"
     t.datetime "date"
@@ -235,6 +252,17 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
     t.index ["type"], name: "index_requirements_on_type"
   end
 
+  create_table "stalls", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "public_market_id"
+    t.uuid "business_id"
+    t.integer "tenant_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id"], name: "index_stalls_on_business_id"
+    t.index ["public_market_id"], name: "index_stalls_on_public_market_id"
+    t.index ["tenant_type"], name: "index_stalls_on_tenant_type"
+  end
+
   create_table "sub_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "category_id"
     t.string "name"
@@ -250,6 +278,8 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
     t.uuid "revenue_account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "accounts_receivable_account_id"
+    t.index ["accounts_receivable_account_id"], name: "index_taxes_on_accounts_receivable_account_id"
     t.index ["revenue_account_id"], name: "index_taxes_on_revenue_account_id"
   end
 
@@ -377,17 +407,23 @@ ActiveRecord::Schema.define(version: 2018_03_12_131713) do
   add_foreign_key "business_ownerships", "businesses"
   add_foreign_key "business_requirements", "businesses"
   add_foreign_key "business_requirements", "requirements"
+  add_foreign_key "business_tax_brackets", "categories"
   add_foreign_key "business_taxes", "businesses"
   add_foreign_key "business_taxes", "taxes"
   add_foreign_key "business_trades", "sub_categories"
   add_foreign_key "businesses", "accounts", column: "business_tax_account_id"
+  add_foreign_key "businesses", "categories"
   add_foreign_key "businesses", "type_of_organizations"
+  add_foreign_key "fees", "accounts", column: "accounts_receivable_account_id"
   add_foreign_key "fees", "accounts", column: "revenue_account_id"
   add_foreign_key "gross_sales", "business_tax_brackets"
   add_foreign_key "gross_sales", "businesses"
   add_foreign_key "requirement_transactions", "business_requirements"
   add_foreign_key "requirements", "requirements", column: "main_requirement_id"
+  add_foreign_key "stalls", "businesses"
+  add_foreign_key "stalls", "public_markets"
   add_foreign_key "sub_categories", "categories"
+  add_foreign_key "taxes", "accounts", column: "accounts_receivable_account_id"
   add_foreign_key "taxes", "accounts", column: "revenue_account_id"
   add_foreign_key "voucher_amounts", "accounts"
   add_foreign_key "voucher_amounts", "vouchers"
