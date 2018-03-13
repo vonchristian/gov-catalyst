@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="col-md-6">
+    <%= simple_form_for @business_trade, url: :configurations_business_trades do |f| %>
+      <%= f.error_notification %>
+      <%= f.input :name %>
+      <%= f.submit "Create Business Trade" %>
+    <% end %>
+  </div>
+</div>

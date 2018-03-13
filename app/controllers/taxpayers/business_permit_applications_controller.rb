@@ -9,7 +9,7 @@ module Taxpayers
       @permit_application = Taxpayers::BusinessPermitApplication.new(permit_application_params)
       if @permit_application.valid?
         @permit_application.process!
-        redirect_to taxpayer_url(@taxpayer), notice: "Application saved successfully"
+        redirect_to "/", notice: "Application saved successfully"
       else
         render :new
       end

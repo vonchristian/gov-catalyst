@@ -1,5 +1,13 @@
 require 'rails_helper'
 
-RSpec.describe BusinessTax, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+module Businesses
+  describe BusinessTax do
+    describe 'associations' do
+      it { is_expected.to belong_to :tax }
+      it { is_expected.to belong_to :business }
+    end
+    describe 'validations' do
+      it { is_expected.to validate_uniqueness_of(:tax_id).scoped_to(:business_id) }
+    end
+  end
 end

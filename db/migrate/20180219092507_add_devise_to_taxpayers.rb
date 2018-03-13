@@ -34,7 +34,7 @@ class AddDeviseToTaxpayers < ActiveRecord::Migration[5.2]
     end
 
     add_index :taxpayers, :reset_password_token, unique: true
-    # add_index :taxpayers, :confirmation_token,   unique: true
+    add_index :taxpayers, :confirmation_token,   unique: true
     add_index :taxpayers, :unlock_token,         unique: true
   end
 

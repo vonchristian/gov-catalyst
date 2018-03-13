@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BPLS</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
+  </head>
+  <body class="hold-transition skin-yellow-light sidebar-mini">
+    <div class="wrapper">
+          <%=render "layouts/taxpayers/header" %>
+          <%=render 'layouts/taxpayers/sidebar' %>
+      <div class="content-wrapper">
+        <section class="content">
+          <ol class="breadcrumb">
+            <li><%= breadcrumbs pretext: "You are here: ",
+                separator: " &rsaquo; " %></li>
+          </ol>
+          <%=render "layouts/taxpayers/flash" %>
+
+          <%=current_taxpayer %>
+          <%= yield %>
+        </section>
+      </div>
+        <%=render 'layouts/taxpayers/footer' %>
+    </div>
+  </body>
+</html>

@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>GovCatalyst</title>
+    <title>BPLS</title>
     <%= csrf_meta_tags %>
 
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
   </head>
+  <body class="hold-transition skin-yellow-light sidebar-mini">
+    <div class="wrapper">
+          <%=render "layouts/header" %>
+          <%=render 'layouts/sidebar' %>
+      <div class="content-wrapper">
+        <section class="content">
+          <ol class="breadcrumb">
+            <li><%= breadcrumbs pretext: "You are here: ",
+                separator: " &rsaquo; " %></li>
+          </ol>
+          <%=render "layouts/flash" %>
 
-  <body>
-    <%=render 'layouts/header' %>
-    <%=render 'layouts/flash' %>
-    <%= yield %>
+          <%=current_taxpayer %>
+          <%= yield %>
+        </section>
+      </div>
+        <%=render 'layouts/footer' %>
+    </div>
   </body>
 </html>

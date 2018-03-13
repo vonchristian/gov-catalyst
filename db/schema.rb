@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_28_072509) do
+ActiveRecord::Schema.define(version: 2018_03_12_131713) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -125,14 +125,14 @@ ActiveRecord::Schema.define(version: 2018_02_28_072509) do
   end
 
   create_table "business_taxes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "fee_id"
     t.uuid "business_id"
     t.datetime "date"
     t.decimal "cost", default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "tax_id"
     t.index ["business_id"], name: "index_business_taxes_on_business_id"
-    t.index ["fee_id"], name: "index_business_taxes_on_fee_id"
+    t.index ["tax_id"], name: "index_business_taxes_on_tax_id"
   end
 
   create_table "business_trades", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -148,6 +148,8 @@ ActiveRecord::Schema.define(version: 2018_02_28_072509) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "type_of_organization_id"
+    t.uuid "business_tax_account_id"
+    t.index ["business_tax_account_id"], name: "index_businesses_on_business_tax_account_id"
     t.index ["type_of_organization_id"], name: "index_businesses_on_type_of_organization_id"
   end
 
@@ -180,6 +182,8 @@ ActiveRecord::Schema.define(version: 2018_02_28_072509) do
     t.string "feeable_type"
     t.uuid "feeable_id"
     t.integer "payment_recurrence", default: 0
+    t.integer "fee_type"
+    t.index ["fee_type"], name: "index_fees_on_fee_type"
     t.index ["feeable_type", "feeable_id"], name: "index_fees_on_feeable_type_and_feeable_id"
     t.index ["name"], name: "index_fees_on_name", unique: true
     t.index ["payment_recurrence"], name: "index_fees_on_payment_recurrence"
@@ -226,6 +230,8 @@ ActiveRecord::Schema.define(version: 2018_02_28_072509) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
+    t.uuid "main_requirement_id"
+    t.index ["main_requirement_id"], name: "index_requirements_on_main_requirement_id"
     t.index ["type"], name: "index_requirements_on_type"
   end
 
@@ -280,6 +286,7 @@ ActiveRecord::Schema.define(version: 2018_02_28_072509) do
     t.string "invited_by_type"
     t.uuid "invited_by_id"
     t.integer "invitations_count", default: 0
+    t.datetime "remember_created_at"
     t.index ["email"], name: "index_taxpayers_on_email", unique: true
     t.index ["invitation_token"], name: "index_taxpayers_on_invitation_token", unique: true
     t.index ["invitations_count"], name: "index_taxpayers_on_invitations_count"
@@ -290,11 +297,49 @@ ActiveRecord::Schema.define(version: 2018_02_28_072509) do
     t.index ["unlock_token"], name: "index_taxpayers_on_unlock_token", unique: true
   end
 
+  create_table "tenants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.string "contact_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "type_of_organizations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_type_of_organizations_on_name", unique: true
+  end
+
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.inet "current_sign_in_ip"
+    t.inet "last_sign_in_ip"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "unconfirmed_email"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.string "first_name"
+    t.string "middle_name"
+    t.integer "role"
+    t.string "designation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
   create_table "voucher_amounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -333,13 +378,15 @@ ActiveRecord::Schema.define(version: 2018_02_28_072509) do
   add_foreign_key "business_requirements", "businesses"
   add_foreign_key "business_requirements", "requirements"
   add_foreign_key "business_taxes", "businesses"
-  add_foreign_key "business_taxes", "fees"
+  add_foreign_key "business_taxes", "taxes"
   add_foreign_key "business_trades", "sub_categories"
+  add_foreign_key "businesses", "accounts", column: "business_tax_account_id"
   add_foreign_key "businesses", "type_of_organizations"
   add_foreign_key "fees", "accounts", column: "revenue_account_id"
   add_foreign_key "gross_sales", "business_tax_brackets"
   add_foreign_key "gross_sales", "businesses"
   add_foreign_key "requirement_transactions", "business_requirements"
+  add_foreign_key "requirements", "requirements", column: "main_requirement_id"
   add_foreign_key "sub_categories", "categories"
   add_foreign_key "taxes", "accounts", column: "revenue_account_id"
   add_foreign_key "voucher_amounts", "accounts"

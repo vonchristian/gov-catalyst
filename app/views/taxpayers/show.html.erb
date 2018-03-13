@@ -1,6 +1,1 @@
 <%= @taxpayer.email %>
-<%= link_to "New Business Permit Application", new_taxpayer_business_permit_application_path(@taxpayer), class: "btn btn-outline-warning" %>
-<h4>Businesses</h4>
-<% @taxpayer.businesses.each do |business| %>
-  <%= business.name %>
-<% end %>
