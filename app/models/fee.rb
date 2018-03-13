@@ -7,4 +7,9 @@ class Fee < ApplicationRecord
   def self.total_amount
     sum(&:amount)
   end
+
+  def paid(options={})
+    revenue_account.balance(options)
+  end
+
 end
