@@ -1,4 +1,5 @@
 class BusinessesController < ApplicationController
+    layout 'taxpayer'
   def index
     if params[:taxpayer_id].present?
       @taxpayer = Taxpayer.find(params[:taxpayer_id])

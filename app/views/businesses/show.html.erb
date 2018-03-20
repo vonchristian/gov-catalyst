@@ -1,8 +1,11 @@
 <%= link_to 'Add Fees', new_business_fee_path(@business) %>
 <%= link_to "New Gross Sale", new_business_gross_sale_path(@business) %>
 
-<h4>Business Taxes</h4>
+<h4>Taxes</h4>
 <% @business.business_taxes.each do |business_tax| %>
    <%= business_tax.name %>
    <%= number_to_currency business_tax.amount %>
 <% end %>
+<hr>
+
+<h4>Fees</h4>
